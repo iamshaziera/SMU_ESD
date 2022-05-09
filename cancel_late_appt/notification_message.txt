@@ -1,0 +1,1 @@
+Dear ${user_name}, as you were late for over 10 minutes, we regret to inform you that your appointment has been cancelled. In addition, your deposit will also not be refunded. Yours Truly, ${clinic_name}

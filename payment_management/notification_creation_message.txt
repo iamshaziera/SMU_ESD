@@ -1,0 +1,1 @@
+Dear ${user_name}, your booking has been confirmed. Thank you for choosing ${clinic_name}. See you soon! Best regards, ${clinic_name}

@@ -1,0 +1,80 @@
+# Vet Clinic Appointment Enterprise Solution: Pet Society
+
+## Introduction
+Currently, medical appointments for pets are booked through old-fashioned methods such as calling the clinic, or bringing the pet to the clinic on short notice. There is a lack of a one-stop online portal that connects pet owners with veterinary clinics when booking their pet’s medical appointments in Singapore. Our solution gives pet owners the ability to search for suitable clinics and book medical appointments for their pets, while simultaneously allowing clinics to manage their appointments.
+
+## Installation
+1. Ensure that WAMP/MAMP server is up and running
+2. Run the following SQL files in PhpMyAdmin to create necessary databases for the microservices. These files can be found in the following path: ‘app/sql/file.sql’
+
+	i) booking.sql
+	ii) clinic.sql
+	iii) medical_record.sql
+	iv) user.sql
+
+3. Ensure that docker is up and running
+4. Open up file docker-compose.yml in directory 'app/docker-compose.yml' and replace all 'marcusgoh' with your docker's username.
+5. Start all of the microservices by running command 'docker-compose up' in the following directory 'app'.
+6. Open the app by accessing ‘localhost/app/ui/public/php/’. User will be directed to the index page of the site for pet owners to login.
+7. After screen loads, click 'Customer Sign up' button on the left of the page to reach the Sign Up page for the start of the first user scenario.
+
+## User Scenario Instructions
+
+### User Scenario 1 - 
+
+1. Proceed to ‘localhost/app/ui/public/php/user_signup.php’ to load the starting page of the first user scenario.
+2. Enter relevant fields and click 'Create my account' button to sign up.
+3. After signing up, click the 'login' button and enter your account details.
+
+### User Scenario 2 - 
+1. After logging in from the previous scenario, scroll down and click 'Book an appointment'.
+2. Select your preferred vet clinic.
+3. Scroll down to click 'Book an appointment'
+4. Select a service type, and a preferred date and time before clicking proceed.
+5. Check your booking details and subsequently proceed to payment.
+6. Enter the following details for the credit card;
+	
+	Valid card
+	i) Card number: 4242 4242 4242 4242
+	ii) MM/YY: 04/24
+	iii) CVC: 242
+	iv) ZIP: 42424
+
+	Invalid card (expired)
+	i) Card number: 4000 0000 0000 0069
+	ii) MM/YY: 04/24
+	iii) CVC: 242
+	iv) ZIP: 42424
+
+7. Submit payment
+
+### User Scenario 3 - 
+1. Proceed to ‘localhost/app/ui/public/php/clinic_login.php’ to load the starting page of the third user scenario.
+2. Login with the following clinic details;
+
+	i) Clinic username: suvc
+	ii) Password: suvc1
+
+3. Select an appointment that you wish to cancel.
+4. Scroll down and click 'Cancel Appointment'.
+
+
+Fun facts
+1. Try booking an appointment with Sunshine Vet Care using your account details with your phone number. You will receive an SMS notification if you cancel the appointment for scenario 3! :)
+2. Apart from cancelling an appointment, you can also process the appointment by filling up the remarks and clicking "Process appointment". Thereafter, the booking would be deleted and a medical record for the appointment would be created.
+
+## Authors and Acknowledgement
+
+### Group Members:
+
+1. Marcus Goh
+2. Angela Tjandra
+3. Heather Hoe
+4. Glennis Ng
+5. Shaziera
+
+### API Acknowledgement
+
+1. Google API
+2. Stripe API
+3. Twilio API

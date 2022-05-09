@@ -1,0 +1,181 @@
+version: "3.8"
+
+volumes:
+  rabbitmq_data:
+
+services:
+
+  ###################################
+  # Clinic: The clinic microservice
+  ###################################
+  clinic:
+    build:
+      context: ./clinic
+      dockerfile: clinic.Dockerfile
+    image: marcusgoh/clinic:01
+    restart: always
+    environment:
+      dbURL: mysql+mysqlconnector://is213@host.docker.internal:3306/esd_clinic
+      PYTHONUNBUFFERED: 1
+    ports:
+      - "5000:5000"
+
+  ###################################
+  # Booking: The booking microservice
+  ###################################
+  booking:
+    build:
+      context: ./booking
+      dockerfile: booking.Dockerfile
+    image: marcusgoh/booking:01
+    restart: always
+    environment:
+      dbURL: mysql+mysqlconnector://is213@host.docker.internal:3306/esd_booking
+      PYTHONUNBUFFERED: 1
+    ports:
+      - "5100:5100"
+
+  ###################################
+  # User: The user microservice
+  ###################################
+  user:
+    build:
+      context: ./user
+      dockerfile: user.Dockerfile
+    image: marcusgoh/user:01
+    restart: always
+    environment:
+      dbURL: mysql+mysqlconnector://is213@host.docker.internal:3306/esd_user
+      PYTHONUNBUFFERED: 1
+    ports:
+      - "5200:5200"
+
+  ###################################
+  # Medical Record: The medical_record microservice
+  ###################################
+  medical_record:
+    build:
+      context: ./medical_record
+      dockerfile: medical_record.Dockerfile
+    image: marcusgoh/medical_record:01
+    restart: always
+    environment:
+      dbURL: mysql+mysqlconnector://is213@host.docker.internal:3306/esd_medical_record
+      PYTHONUNBUFFERED: 1
+    ports:
+      - "5300:5300"
+
+  ###################################
+  # Notification: The notification microservice
+  ###################################
+  notification:
+    build:
+      context: ./notification
+      dockerfile: notification.Dockerfile
+    image: marcusgoh/notification:01
+    restart: always
+    depends_on:
+      - rabbitmq
+    environment:
+      rabbit_host: rabbitmq
+      rabbit_port: 5672
+      PYTHONUNBUFFERED: 1
+
+  ###################################
+  # Record appointment: The appt_recorded microservice
+  ###################################
+  appt_recorded:
+    build:
+      context: ./appt_recorded
+      dockerfile: appt_recorded.Dockerfile
+    image: marcusgoh/appt_recorded:01
+    restart: always
+    depends_on:
+      - booking
+      - medical_record
+    ports:
+      - "5500:5500"
+
+  ###################################
+  # Cancel late appointment: The cancel_late_appt microservice
+  ###################################
+  cancel_late_appt:
+    build:
+      context: ./cancel_late_appt
+      dockerfile: cancel_late_appt.Dockerfile
+    image: marcusgoh/cancel_late_appt:01
+    restart: always
+    depends_on:
+      - user
+      - booking
+      - clinic
+      - rabbitmq
+    environment:
+      rabbit_host: rabbitmq
+      rabbit_port: 5672
+      PYTHONUNBUFFERED: 1
+    ports:
+      - "5600:5600"
+      
+  ###################################
+  # Get all information related to appointment: The get_appt_info microservice
+  ###################################
+  get_appt_info:
+    build:
+      context: ./get_appt_info
+      dockerfile: get_appt_info.Dockerfile
+    image: marcusgoh/get_appt_info:01
+    restart: always
+    depends_on:
+      - user
+      - booking
+      - medical_record
+    ports:
+      - "5700:5700"
+
+  ####################################
+  # RabbitMQ: The messaging broker   
+  ####################################
+  rabbitmq:
+    image: rabbitmq:3-management
+    hostname: esd-rabbit
+    restart: always
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes: 
+      - rabbitmq_data:/var/lib/rabbitmq
+
+  ###################################
+  # Payment: The payment microservice
+  ###################################
+  payment:
+    build:
+      context: ./payment
+      dockerfile: payment.Dockerfile
+    image: marcusgoh/payment:01
+    restart: always
+    ports:
+      - "5800:5800"
+
+  ###################################
+  # Manage payment: The payment_management microservice
+  ###################################
+  payment_management:
+    build:
+      context: ./payment_management
+      dockerfile: payment_management.Dockerfile
+    image: marcusgoh/payment_management:01
+    restart: always
+    depends_on:
+      - booking
+      - payment
+      - user
+      - clinic
+      - rabbitmq
+    environment:
+      rabbit_host: rabbitmq
+      rabbit_port: 5672
+      PYTHONUNBUFFERED: 1
+    ports:
+      - "5900:5900"
